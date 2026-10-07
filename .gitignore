@@ -1,0 +1,49 @@
+# Silent Shield — never commit secrets, databases, uploads, or build output.
+# If any of these were ever committed, rotate the secret and purge history.
+
+# --- Environment & secrets ---
+.env
+.env.*
+!.env.example
+
+# --- Django ---
+db.sqlite3
+db.sqlite3-journal
+media/
+!staticfiles/
+*.log
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+
+# --- Virtual envs & package managers (uv) ---
+.venv/
+venv/
+ENV/
+.python-version.local
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Editors & IDEs ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- Backups & local dumps ---
+backups/
+*.sql.gz
+*.bak
+
+# --- Testing & coverage ---
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/

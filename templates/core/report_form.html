@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Speak Up Anonymously — Silent Shield{% endblock %}
+{% block content %}
+<div class="wrap narrow">
+  <p class="kicker">No Login · No Name · Nothing Stored</p>
+  <h1>Write Your Letter</h1>
+  <p class="lede">It goes public the second you send it, as <strong>Awaiting Justice</strong>. Attach at least one <strong>photo or video</strong> — audio can come along, but never alone. Then save your case code. It is the only thread back.</p>
+  <aside class="card warn" aria-label="Before you send">
+    <h2>Sixty Seconds That Protect You</h2>
+    <ul class="tight">
+      <li>Keep out faces, plates, and voices that are not part of the wrongdoing.</li>
+      <li>We scrub photo metadata and rename every file to a random code.</li>
+      <li>Use a connection you trust. Never type your name anywhere here.</li>
+    </ul>
+  </aside>
+  <form method="post" enctype="multipart/form-data" class="stack card" id="reportForm" novalidate style="margin-top:18px">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<p class="err">{{ form.non_field_errors }}</p>{% endif %}
+    <div><label for="id_title">Give It a Headline</label>{{ form.title }}{% for e in form.title.errors %}<p class="err">{{ e }}</p>{% endfor %}</div>
+    <div><label for="id_category">What Kind of Wrongdoing</label>{{ form.category }}</div>
+    <div><label for="id_description">What Happened, Plainly</label>{{ form.description }}<p class="hint">Facts only — what, when, who by role. Not your name.</p>{% for e in form.description.errors %}<p class="err">{{ e }}</p>{% endfor %}</div>
+    <div class="grid2">
+      <div><label for="id_location_text">Where — Area or Landmark</label>{{ form.location_text }}{% for e in form.location_text.errors %}<p class="err">{{ e }}</p>{% endfor %}</div>
+      <div><label for="id_district">District (If You Like)</label>{{ form.district }}</div>
+    </div>
+    <div><label for="id_happened_at">When It Happened (If You Like)</label>{{ form.happened_at }}</div>
+    <div>
+      <label for="id_files">Your Proof — Photos, Video, Audio (Photo or Video Required, Max 20)</label>
+      <input type="file" id="id_files" name="files" multiple required accept="image/*,video/*,audio/*">
+      <p class="hint">Photos ≤{{ limits.image }}&nbsp;MB · video ≤{{ limits.video }}&nbsp;MB · audio ≤{{ limits.audio }}&nbsp;MB. Pick in as many rounds as you like — files pile up below instead of replacing each other. Drop any with ✕.</p>
+      {% for e in ev_form.files.errors %}<p class="err">{{ e }}</p>{% endfor %}
+      <p class="hint" data-count aria-live="polite"></p>
+      <div id="preview" class="preview" data-preview aria-live="polite"></div>
+    </div>
+    <button class="btn primary big" type="submit">Send It to the World</button>
+    <p class="muted small">By sending, you confirm the proof is yours to share and cannot identify you.</p>
+  </form>
+</div>
+{% endblock %}

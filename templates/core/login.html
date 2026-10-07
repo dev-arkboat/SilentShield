@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Corps Login — Silent Shield{% endblock %}
+{% block content %}
+<div class="wrap narrow">
+  <p class="kicker">Officers Only</p>
+  <h1>Take Your Seat</h1>
+  <p class="muted">There is no public sign-up here — that door does not exist. Accounts are handed out by site admins; ask your unit administrator for yours.</p>
+  <form method="post" class="stack card">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<p class="err">{{ form.non_field_errors }}</p>{% endif %}
+    <div><label for="id_username">Badge Login</label>{{ form.username }}</div>
+    <div><label for="id_password">Password</label>{{ form.password }}</div>
+    <button class="btn primary big" type="submit">Enter Your Desk</button>
+  </form>
+  <p class="muted small">Here to report something? Witnesses never log in — <a href="{% url 'report_create' %}">write anonymously instead</a>.</p>
+</div>
+{% endblock %}

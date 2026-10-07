@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}How You Stay Hidden — Silent Shield{% endblock %}
+{% block content %}
+<div class="wrap narrow">
+  <p class="kicker">Read This Before You Film</p>
+  <h1>How You Stay Invisible</h1>
+  <p class="lede">Everything below exists for one reason: the wrong people must never be able to work backwards from a report to a human being.</p>
+  <ol class="journey">
+    <li data-n="1"><h3>No Account, No Name Field</h3><p>The form has nowhere to type who you are — that is deliberate, not missing.</p></li>
+    <li data-n="2"><h3>Nothing Identifying Is Stored</h3><p>Our intake never reads network identifiers, and our logs are filtered to drop them if they ever appear.</p></li>
+    <li data-n="3"><h3>Photo Trails Are Scrubbed</h3><p>Location and device metadata is stripped from images, and every filename is replaced with a random code.</p></li>
+    <li data-n="4"><h3>Publication Is Instant</h3><p>Your letter goes live as Awaiting Justice immediately — there is no back room where names could leak.</p></li>
+    <li data-n="5"><h3>Handling Expires</h3><p>One officer per case, and cases left hanging return to the public queue after {{ ttl_days }} days (about 10&nbsp;months).</p></li>
+    <li data-n="6"><h3>Guardians Stay Masked</h3><p>Marketplace contact runs through our blind relay. Hacker identities are checked by the team and never published.</p></li>
+  </ol>
+  <div class="card warn"><h2>Your Half of the Bargain</h2>
+    <ul class="tight">
+      <li>Film from a safe distance; leave out faces and plates that are not the story.</li>
+      <li>Do not say your name on camera. Trim it if it slips out.</li>
+      <li>Use a connection you trust — a VPN or Tor on public Wi-Fi.</li>
+      <li>Save your case code (like AC-1A2B3C4D). It is the only thread.</li>
+    </ul>
+  </div>
+  <p><a class="btn primary" href="{% url 'report_create' %}">Write Your Letter</a></p>
+</div>
+{% endblock %}

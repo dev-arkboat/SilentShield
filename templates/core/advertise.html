@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Advertise — Sustain the Lamp | Silent Shield{% endblock %}
+{% block content %}
+<div class="wrap narrow">
+  <p class="kicker">Keep the Lamp Lit</p>
+  <h1>Sponsor Without Surveillance</h1>
+  <p class="lede">We run sponsorships the way the big publishers do — leaderboard, in-feed, sidebar — but contextual only. No trackers, no profiles, and reporter data is never shared, because none exists to share.</p>
+  <h2>The Placements</h2>
+  <ul class="tight">
+    {% for s in slots %}
+    <li><strong>{{ s.name }}</strong> <span class="mono small" translate="no">{{ s.key }} · {{ s.width }}×{{ s.height }}</span><br><span class="muted">{{ s.description }} — {{ s.campaigns.count }} campaign{{ s.campaigns.count|pluralize }} running</span></li>
+    {% empty %}<li class="muted">Placements appear after the first migrate.</li>{% endfor %}
+  </ul>
+  <h2>How Sponsorship Works</h2>
+  <ol class="journey">
+    <li data-n="1"><h3>Book a Placement</h3><p>A fixed creative — image plus link — or an embed snippet. Weight decides how often it appears.</p></li>
+    <li data-n="2"><h3>Set Schedule &amp; Caps</h3><p>Start and end dates, plus an optional impression cap. Delivery pauses itself when either hits.</p></li>
+    <li data-n="3"><h3>Pay for Attention, Not People</h3><p>You get aggregate impressions, clicks, and dismissals. Nothing personal — there is nothing personal to give.</p></li>
+    <li data-n="4"><h3>Stay Clearly Labelled</h3><p>Every unit carries an “Advertisement” tag and a dismiss control. Readers always know what is paid.</p></li>
+  </ol>
+  <div class="card"><h2>A Starting Rate Card</h2>
+    <p class="muted">Leaderboard 970×250 · in-feed native · sidebar 300×600. Write to the ops team to launch — every creative is reviewed by a human before it serves.</p>
+  </div>
+</div>
+{% endblock %}

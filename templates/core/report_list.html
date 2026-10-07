@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load ads_tags %}
+{% block title %}Live Reports — Silent Shield{% endblock %}
+{% block content %}
+<div class="wrap page-head">
+  <div><p class="kicker">The Public File · Newest First</p><h1>Letters People Dared to Send</h1></div>
+  <p><a class="btn primary" href="{% url 'report_create' %}">Add Yours Anonymously</a></p>
+</div>
+<form class="wrap filters reveal" method="get" role="search" aria-label="Filter reports">
+  <label>Search <input type="search" name="q" value="{{ q }}" placeholder="Case code, keyword, place…"></label>
+  <label>Status
+    <select name="status"><option value="">Everything</option>
+    {% for v,l in status_choices %}<option value="{{ v }}" {% if status == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select>
+  </label>
+  <label>Category
+    <select name="category"><option value="">Every Kind</option>
+    {% for v,l in category_choices %}<option value="{{ v }}" {% if category == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select>
+  </label>
+  <button class="btn ghost" type="submit">Filter</button>
+</form>
+<div class="wrap letters">
+  {% for r in page_obj %}
+  <article class="letter">
+    <p class="mono small"><span translate="no">{{ r.public_id }}</span> · {{ r.get_category_display }} · {{ r.location_text|truncatechars:40 }}</p>
+    <h2 class="letter-title"><a href="{{ r.get_absolute_url }}">{{ r.title|truncatechars:90 }}</a></h2>
+    <p class="muted">{{ r.description|truncatechars:150 }}</p>
+    <p class="row-between"><span class="stamp stamp-{{ r.status }}">{{ r.get_status_display }}</span><span class="muted small">{{ r.created_at|date:"d M Y" }} · {{ r.evidence.count }} file{{ r.evidence.count|pluralize }}</span></p>
+  </article>
+  {% empty %}<p class="muted">Nothing matches. Loosen the filters — or write the first letter.</p>{% endfor %}
+</div>
+<div class="wrap">{% render_ad_slot "feed-inline" %}</div>
+<nav class="wrap pager" aria-label="Pages">
+  {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&amp;q={{ q }}&amp;status={{ status }}&amp;category={{ category }}">← Newer</a>{% endif %}
+  <span class="muted">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&amp;q={{ q }}&amp;status={{ status }}&amp;category={{ category }}">Older →</a>{% endif %}
+</nav>
+{% endblock %}

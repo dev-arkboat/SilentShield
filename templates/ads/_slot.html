@@ -1,0 +1,15 @@
+{% if ad and slot %}
+<aside class="ad reveal" data-ad="{{ ad.id }}" data-slot="{{ slot.key }}" aria-label="Advertisement">
+  <p class="ad-label"><span>Advertisement</span><span class="mono" translate="no">{{ slot.key }}</span>
+    <button class="ad-x" type="button" data-dismiss="{{ ad.id }}" aria-label="Dismiss this advertisement">Dismiss ✕</button>
+  </p>
+  {% if ad.embed_html %}
+    <div class="ad-embed">{{ ad.embed_html|safe }}</div>
+  {% else %}
+    <a class="ad-body" href="{% url 'ad_click' ad.id %}" data-click="{{ ad.id }}">
+      {% if ad.image %}<img src="{{ ad.image.url }}" alt="{{ ad.title }}" loading="lazy" width="264" height="192">{% endif %}
+      <span class="ad-text"><strong>{{ ad.title }}</strong><span>{{ ad.tagline }}</span><em>{{ ad.sponsor }} →</em></span>
+    </a>
+  {% endif %}
+</aside>
+{% endif %}

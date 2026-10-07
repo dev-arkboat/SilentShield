@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ hacker.nickname }} — Guardian | Silent Shield{% endblock %}
+{% block content %}
+<div class="wrap narrow">
+  <p class="crumbs"><a href="{% url 'hacker_list' %}">Guardians</a> / {{ hacker.nickname }}</p>
+  <p class="mono small"><span translate="no">{{ hacker.relay_handle|default:"blind-relay" }}</span> · checked {% if hacker.verified_at %}{{ hacker.verified_at|date:"M Y" }}{% endif %}{% if hacker.affiliated_org %} · {{ hacker.affiliated_org }}{% endif %}</p>
+  <h1>{{ hacker.nickname }}</h1>
+  <p class="lede">{{ hacker.tagline }}</p>
+  <p class="prewrap">{{ hacker.bio }}</p>
+  <p class="tagrow">{% for s in hacker.skill_list %}<span class="tag">{{ s }}</span> {% endfor %}</p>
+  {% if hacker.services %}<section class="card"><h2>What They Do</h2><p class="prewrap">{{ hacker.services }}</p><p class="muted">{{ hacker.price_range }}</p></section>{% endif %}
+  <section class="card" aria-label="Team ratings" style="margin-top:16px">
+    <h2>Our Rating — ★ {{ hacker.rating }} ({{ hacker.ratings_count }})</h2>
+    {% for r in ratings %}
+    <p><strong>★{{ r.score }}</strong> {{ r.comment }} <span class="muted small">— the team, {{ r.created_at|date:"M Y" }}</span></p>
+    {% empty %}<p class="muted">Ratings are still being written.</p>{% endfor %}
+  </section>
+  <section class="card" aria-label="Contact" style="margin-top:16px;background:var(--flame-tint);border-color:var(--flame)">
+    <h2>Reach Them Through Us</h2>
+    <p class="muted small">No email, no phone — on either side. Your note goes to our team, and we connect you both without exposing anyone.</p>
+    <form method="post" class="stack">
+      {% csrf_token %}
+      <div><label for="id_subject">Subject</label>{{ form.subject }}</div>
+      <div><label for="id_message">What You Need</label>{{ form.message }}<p class="hint">Leave out your real name.</p></div>
+      <div><label for="id_callback">A Throwaway Relay (If You Like)</label>{{ form.callback }}</div>
+      <button class="btn primary" type="submit">Send a Blind Request</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

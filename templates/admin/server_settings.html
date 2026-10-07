@@ -1,0 +1,33 @@
+{% extends "admin/base_site.html" %}
+{% block title %}Server Settings — {{ block.super }}{% endblock %}
+{% block content %}
+<h1>Server Settings</h1>
+<p>Changes here are written to the server <code>.env</code> file and take effect on <strong>restart</strong>.
+The running process keeps its old values until then — this page always shows both.</p>
+
+<div class="module">
+  <h2>Debug Mode</h2>
+  <p>Effective right now: <strong>{% if state.debug_effective %}ON (development — never expose this){% else %}OFF (production){% endif %}</strong></p>
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+      <label for="id_debug" style="display:inline">
+        <input type="checkbox" id="id_debug" name="debug" {% if state.debug_checked %}checked{% endif %}>
+        Enable Django debug mode (DJANGO_DEBUG=True)
+      </label>
+      <p class="help">Debug pages leak internals. Keep OFF on any public server. Saving writes to <code>{{ state.env_file }}</code>{% if not state.env_exists %} (file will be created){% endif %}.</p>
+    </div>
+    <div class="submit-row"><input type="submit" class="default" value="Save — Restart Required"></div>
+  </form>
+</div>
+
+<div class="module">
+  <h2>Environment (Read Only)</h2>
+  <table>
+    <tr><th>Database</th><td>{{ state.database }}</td></tr>
+    <tr><th>Allowed hosts</th><td>{{ state.allowed_hosts|join:", " }}</td></tr>
+    <tr><th>Env file</th><td><code>{{ state.env_file }}</code></td></tr>
+  </table>
+  <p class="help">To switch databases, set <code>DATABASE_URL</code> in the env file (Postgres in production, sqlite fallback when absent) and restart.</p>
+</div>
+{% endblock %}

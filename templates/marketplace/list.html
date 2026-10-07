@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load ads_tags %}
+{% block title %}Guardian Marketplace — Silent Shield{% endblock %}
+{% block content %}
+<div class="wrap page-head">
+  <div><p class="kicker">Checked · Aliased · Relay Only</p><h1>Specialists for What the State Can’t Reach</h1>
+  <p class="muted" style="max-width:64ch">Every guardian is listed only after officers or partner organisations verify who they really are. You see an alias; their real name stays in a drawer you will never open. Ratings are written by our team, never bought.</p></div>
+</div>
+<div class="wrap guard-grid">
+  {% for h in hackers %}
+  <article class="guard">
+    <p class="mono small" translate="no">{{ h.relay_handle|default:"blind-relay" }} · ★ {{ h.rating }} ({{ h.ratings_count }})</p>
+    <p class="alias"><a href="{{ h.get_absolute_url }}">{{ h.nickname }}</a></p>
+    <p class="muted">{{ h.tagline|default:h.bio|truncatechars:140 }}</p>
+    <p class="tagrow">{% for s in h.skill_list|slice:":4" %}<span class="tag">{{ s }}</span> {% endfor %}</p>
+    <p class="row-between"><span class="muted small">{{ h.price_range }}</span><a href="{{ h.get_absolute_url }}">View &amp; Contact →</a></p>
+  </article>
+  {% empty %}<p class="muted">No guardians yet — verification is deliberately slow.</p>{% endfor %}
+</div>
+<div class="wrap">{% render_ad_slot "marketplace-sidebar" %}</div>
+{% endblock %}

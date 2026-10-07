@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Your Desk — Silent Shield{% endblock %}
+{% block content %}
+<div class="wrap page-head">
+  <div><p class="kicker">Corps Only · {{ user.username }}</p><h1>Your Desk</h1><p class="muted" style="max-width:62ch">Cases you hold, cases waiting for a hand, and cases you brought home. One officer per case — that is the whole discipline.</p></div>
+  <p><a class="btn ghost" href="{% url 'report_list' %}">The Open Queue (<span class="nums">{{ stats.available }}</span>)</a></p>
+</div>
+<section class="wrap stats4 nums" aria-label="Your workload">
+  <div class="stat"><strong>{{ stats.mine }}</strong><span>Cases You Hold</span></div>
+  <div class="stat"><strong>{{ stats.available }}</strong><span>Awaiting Justice</span></div>
+  <div class="stat"><strong>{{ stats.resolved_by_me }}</strong><span>Closed by You</span></div>
+  <div class="stat"><strong>{{ stats.resolved_all }}</strong><span>Closed Overall</span></div>
+</section>
+{% if ageing %}
+<div class="wrap"><p class="notice">{{ ageing|length }} of your cases approach{{ ageing|length|pluralize:"es" }} the {{ ttl_days }}-day handover. Close them or hand them back while they are still yours.</p></div>
+{% endif %}
+<div class="wrap desk">
+  <section aria-label="Cases you hold">
+    <h2>Cases You Hold</h2>
+    {% for r in mine %}
+    <article class="mini">
+      <p class="mono small"><span translate="no">{{ r.public_id }}</span> · held since {{ r.claimed_at|date:"d M Y" }}</p>
+      <h3><a href="{{ r.get_absolute_url }}">{{ r.title }}</a></h3>
+      <p class="row-between"><span class="stamp stamp-investigating">Justice in Motion</span><a href="{{ r.get_absolute_url }}">Open →</a></p>
+    </article>
+    {% empty %}<p class="muted">Empty hands. Take a letter from the queue beside you.</p>{% endfor %}
+    <h2 style="margin-top:26px">Cases You Closed</h2>
+    {% for r in done %}
+    <article class="mini"><p class="mono small" translate="no">{{ r.public_id }}</p><h3><a href="{{ r.get_absolute_url }}">{{ r.title }}</a></h3></article>
+    {% empty %}<p class="muted">No closings yet — the first verified ending starts here.</p>{% endfor %}
+  </section>
+  <aside aria-label="Open queue">
+    <h2>The Open Queue</h2>
+    {% for r in available %}
+    <article class="mini">
+      <p class="mono small"><span translate="no">{{ r.public_id }}</span> · {{ r.get_category_display }}</p>
+      <h3><a href="{{ r.get_absolute_url }}">{{ r.title|truncatechars:80 }}</a></h3>
+      <form method="post" action="{% url 'claim_report' r.public_id %}">{% csrf_token %}<button class="btn primary" type="submit">Take This Case</button></form>
+    </article>
+    {% empty %}<p class="muted">The queue is clear. Rare — enjoy it.</p>{% endfor %}
+  </aside>
+</div>
+{% endblock %}

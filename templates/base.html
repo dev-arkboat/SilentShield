@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Silent Shield — Say What You Saw, Safely{% endblock %}</title>
+  <meta name="description" content="Silent Shield: tell what you saw with photo, video, or audio proof. Your report goes public in seconds. No name, no account, nothing that leads back to you.">
+  <!-- Privacy is a feature: zero third-party fonts, trackers, or embeds. System type only. -->
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23242019'/%3E%3Cellipse cx='16' cy='18' rx='6' ry='7' fill='none' stroke='%23FAF6EE' stroke-width='2'/%3E%3Cellipse cx='16' cy='18' rx='2' ry='3' fill='%23F5B96B'/%3E%3C/svg%3E">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to Content</a>
+  <header class="topbar" id="siteHeader">
+    <div class="wrap topbar-in">
+      <a class="brand" href="{% url 'home' %}" aria-label="Silent Shield Home">
+        <svg class="brand-lamp" viewBox="0 0 40 40" aria-hidden="true"><rect x="13" y="6" width="14" height="4" rx="2" fill="#242019"/><path d="M11 12h18l2.5 16a4 4 0 0 1-4 4h-15a4 4 0 0 1-4-4z" fill="none" stroke="#242019" stroke-width="2.5"/><ellipse cx="20" cy="21" rx="3.4" ry="4.6" fill="#9A3412"/><rect x="17" y="32" width="6" height="3" rx="1.5" fill="#242019"/></svg>
+        <span><span class="brand-text">Silent <em>Shield</em></span><span class="brand-sub" translate="no">Anonymous Witness Network</span></span>
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="siteNav">Menu</button>
+      <nav class="nav" id="siteNav" aria-label="Primary">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'report_list' %}">Live Reports</a>
+        <a href="{% url 'report_create' %}" class="nav-cta">Speak Up</a>
+        <a href="{% url 'hacker_list' %}">Guardians</a>
+        <details class="nav-drop">
+          <summary>More</summary>
+          <div class="nav-panel">
+            <a href="{% url 'safety' %}">Your Safety</a>
+            <a href="{% url 'advertise' %}">Advertise</a>
+            <a href="{% url 'about' %}">Why This Exists</a>
+          </div>
+        </details>
+        {% if user.is_authenticated %}
+          <a href="{% url 'dashboard' %}" class="nav-strong">Your Desk</a>
+          <details class="nav-drop nav-user">
+            <summary><span class="user-dot" aria-hidden="true"></span>{{ user.username }}</summary>
+            <div class="nav-panel">
+              <p class="nav-who">Signed in as <strong>{{ user.username }}</strong></p>
+              <form class="inline" method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="linklike" type="submit">Log Out</button></form>
+            </div>
+          </details>
+        {% else %}
+          <a href="{% url 'login' %}" class="nav-strong">Corps Login</a>
+        {% endif %}
+      </nav>
+    </div>
+    {% if site_notice %}<div class="safety-strip level-{{ site_notice.level }}" role="note">{{ site_notice.message }}</div>{% endif %}
+  </header>
+
+  {% if messages %}
+  <div class="wrap" role="status" aria-live="polite">
+    <ul class="flash">
+      {% for m in messages %}<li class="flash-{{ m.tags }}">{{ m }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <main id="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <div class="wrap foot-grid">
+      <div>
+        <p class="foot-brand">Silent Shield</p>
+        <p>Corruption survives on fear. This is a lamp left on for anyone who saw something and cannot afford to be known. Reports go public in seconds as <strong>Awaiting Justice</strong>. Officers take one case at a time, and close it only with proof.</p>
+        <p class="small">No public sign-ups. Corps accounts are handed out by admins, never self-made. Guardian identities are checked by the team and never published.</p>
+      </div>
+      <nav aria-label="Footer">
+        <a href="{% url 'report_list' %}">Live Reports</a>
+        <a href="{% url 'report_create' %}">Speak Up Anonymously</a>
+        <a href="{% url 'hacker_list' %}">Guardian Marketplace</a>
+        <a href="{% url 'safety' %}">How You Stay Hidden</a>
+        <a href="{% url 'about' %}">Why This Exists</a>
+        <a href="{% url 'advertise' %}">Advertise With Us</a>
+        {% if user.is_authenticated %}<a href="{% url 'dashboard' %}">Your Desk</a>{% else %}<a href="{% url 'login' %}">Corps Login</a>{% endif %}
+      </nav>
+      <div>
+        <p class="foot-h">Before You Film</p>
+        <p class="small">Leave out faces, plates, and voices that are not part of the wrongdoing. We scrub photo metadata and rename every file — but what you point the camera at is up to you.</p>
+      </div>
+    </div>
+    <div class="wrap foot-base"><span>© {% now "Y" %} <span translate="no">Silent Shield</span></span><span aria-hidden="true">·</span><span>Contextual sponsorships only. No cross-site trackers, ever.</span></div>
+  </footer>
+  <script src="{% static 'js/main.js' %}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

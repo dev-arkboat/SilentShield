@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% load ads_tags humanize %}
+{% block content %}
+<section class="wrap hero">
+  <div>
+    <p class="kicker">For Anyone Who Saw Something</p>
+    <h1>You Saw It. Now Say It — <span class="mark">Safely.<svg viewBox="0 0 200 24" preserveAspectRatio="none" aria-hidden="true"><path d="M4 16 C 60 6, 140 6, 196 14"/></svg></span></h1>
+    <p class="lede">Write down what happened, attach a photo or video, and your report goes public in seconds — with proof the world can see, and nothing that leads back to you.</p>
+    <p class="cta-row">
+      <a class="btn primary" href="{% url 'report_create' %}">Speak Up Anonymously</a>
+      <a class="btn ghost" href="{% url 'report_list' %}">Read the Live Reports</a>
+    </p>
+    <p class="hero-note">
+      <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><ellipse cx="10" cy="11" rx="5" ry="6" fill="none" stroke="#9A3412" stroke-width="2"/><ellipse cx="10" cy="11" rx="1.6" ry="2.4" fill="#9A3412"/></svg>
+      <span>There is nowhere on that form to type your name — on purpose. Save the case code we give you. It is the only thread between you and your report.</span>
+    </p>
+    <dl class="statline nums">
+      <div><dt>{{ stats.total|intcomma }}</dt><dd>Reports Live</dd></div>
+      <div><dt>{{ stats.resolved|intcomma }}</dt><dd>Resolved &amp; Verified</dd></div>
+      <div><dt>{{ stats.investigating|intcomma }}</dt><dd>Being Handled Now</dd></div>
+      <div><dt>{{ stats.guardians|intcomma }}</dt><dd>Vetted Guardians</dd></div>
+    </dl>
+  </div>
+  <aside class="letter" aria-label="Latest live reports">
+    <div class="letter-head"><span class="mono">Tonight’s Live File</span><span class="lamp-dot" aria-hidden="true"></span></div>
+    <ul class="file-list">
+      {% for r in recent %}
+      <li><a href="{{ r.get_absolute_url }}"><span class="mono" translate="no">{{ r.public_id }}</span><span class="file-t">{{ r.title|truncatechars:70 }}</span><span class="file-meta"><span class="stamp stamp-{{ r.status }}">{{ r.get_status_display }}</span><span class="muted small">{{ r.created_at|naturaltime }}</span></span></a></li>
+      {% empty %}<li class="muted">Quiet so far — yours could be the first letter.</li>{% endfor %}
+    </ul>
+    <p style="margin-bottom:0"><a class="small" href="{% url 'report_list' %}">Open the Full File →</a></p>
+  </aside>
+</section>
+
+<div class="wrap reveal">{% render_ad_slot "header-leaderboard" %}</div>
+
+<section class="wrap section reveal" aria-label="How your report travels">
+  <p class="kicker">From Your Hands to the Public Record</p>
+  <h2>How Your Report Travels</h2>
+  <ol class="journey">
+    <li data-n="1"><h3>You Capture Proof</h3><p>A photo or video is required — audio can ride along. Metadata is scrubbed and filenames are randomised before anything is stored.</p></li>
+    <li data-n="2"><h3>It Goes Public Instantly</h3><p>No waiting room, no moderator queue. Your letter appears as <strong>Awaiting Justice</strong> the second you send it.</p></li>
+    <li data-n="3"><h3>One Officer Takes It</h3><p>A logged-in officer claims your case — and only yours. Nobody else can touch it, and stale claims return to the queue after 10&nbsp;months.</p></li>
+    <li data-n="4"><h3>It Closes With Proof</h3><p>Closure needs a written outcome plus photo, video, or audio evidence, published against your case for everyone to inspect.</p></li>
+  </ol>
+</section>
+
+<section class="wrap section reveal" aria-label="Fresh letters">
+  <div class="split-head">
+    <div><h2>Fresh From the File</h2><p class="muted">Newest first. Every letter carries its evidence and its full public timeline.</p></div>
+    <p><a class="btn ghost" href="{% url 'report_list' %}">All Reports</a></p>
+  </div>
+  <div class="letters">
+    {% for r in recent|slice:":4" %}
+    <article class="letter">
+      <p class="mono small"><span translate="no">{{ r.public_id }}</span> · {{ r.get_category_display }}</p>
+      <h3><a href="{{ r.get_absolute_url }}">{{ r.title|truncatechars:85 }}</a></h3>
+      <p class="muted">{{ r.description|truncatechars:150 }}</p>
+      <p class="row-between"><span class="stamp stamp-{{ r.status }}">{{ r.get_status_display }}</span><span class="muted small">{{ r.created_at|naturaltime }}</span></p>
+    </article>
+    {% empty %}<p class="muted">Nothing filed yet.</p>{% endfor %}
+  </div>
+</section>
+
+<div class="wrap reveal">{% render_ad_slot "feed-inline" %}</div>
+
+<section class="band" aria-label="Because someone spoke up">
+  <div class="wrap band-in reveal">
+    <div>
+      <h2>Because Someone Spoke Up</h2>
+      <p class="lede">Anonymous letters, verified endings. These cases closed with published proof — reported by people whose names you will never know.</p>
+      <p><a class="btn light" href="{% url 'report_list' %}?status=resolved">See Every Resolution</a></p>
+    </div>
+    <ul class="courage">
+      {% for r in resolved %}
+      <li><blockquote>“{{ r.title|truncatechars:110 }}”</blockquote><cite>Case <span translate="no">{{ r.public_id }}</span> — {{ r.get_status_display }}, {{ r.resolved_at|date:"M Y" }} · <a href="{{ r.get_absolute_url }}" style="color:#F5B96B">Read the proof</a></cite></li>
+      {% empty %}<li><blockquote>“The first verified ending will be written here — perhaps by you.”</blockquote></li>{% endfor %}
+    </ul>
+  </div>
+</section>
+
+<section class="wrap section reveal" aria-label="Guardian marketplace">
+  <div class="split-head">
+    <div><h2>When You Need a Specialist</h2><p class="muted" style="max-width:62ch">Vetted ethical hackers for forensics, leak verification, and device recovery. Listed by alias only — their real names stay with our team, and you reach them through a blind relay.</p></div>
+    <p><a class="btn ink" href="{% url 'hacker_list' %}">Meet the Guardians</a></p>
+  </div>
+  <div class="guard-grid">
+    {% for g in guardians %}
+    <article class="guard">
+      <p class="mono small"><span translate="no">{{ g.relay_handle|default:"blind-relay" }}</span></p>
+      <p class="alias"><a href="{{ g.get_absolute_url }}">{{ g.nickname }}</a></p>
+      <p class="muted">{{ g.tagline|default:g.bio|truncatechars:120 }}</p>
+      <p><span class="stars" aria-label="Rated {{ g.rating }} out of 5">★ {{ g.rating }}</span> <span class="muted small">· team-rated ({{ g.ratings_count }})</span></p>
+    </article>
+    {% empty %}<p class="muted">Guardians are being vetted — verification is deliberately slow.</p>{% endfor %}
+  </div>
+</section>
+
+<section class="wrap reveal" aria-label="Safety">
+  <div class="safety-cta">
+    <div>
+      <h2>Your Name Never Enters the Building</h2>
+      <p class="muted" style="max-width:60ch">No accounts for witnesses. Nothing identifying is stored. Sixty seconds of reading keeps you safer than any technology we could add afterwards.</p>
+    </div>
+    <p><a class="btn primary" href="{% url 'safety' %}">How You Stay Hidden</a></p>
+  </div>
+</section>
+{% endblock %}

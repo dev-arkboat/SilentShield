@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Why This Exists — Silent Shield{% endblock %}
+{% block content %}
+<div class="wrap narrow">
+  <p class="kicker">The Reason</p>
+  <h1>Fear Protects the Corrupt. Anonymity Returns the Favour.</h1>
+  <p class="lede">Witnesses stay silent because speaking up can endanger them and everyone they love. So we removed the witness from the report: the evidence goes public in seconds, and the reporter never enters the record.</p>
+  <div class="stats4 nums">
+    <div class="stat"><strong>{{ reports }}</strong><span>Letters Live</span></div>
+    <div class="stat"><strong>{{ resolved }}</strong><span>Verified Endings</span></div>
+    <div class="stat"><strong>0</strong><span>Identities Stored</span></div>
+    <div class="stat"><strong>10</strong><span>Months per Claim, Max</span></div>
+  </div>
+  <h2>The House Rules</h2>
+  <ul class="tight">
+    <li>Witnesses are anonymous. What the maintainers are sits with the authorities; what the reporters are sits nowhere.</li>
+    <li>Every letter needs photo or video proof. Audio alone is turned away.</li>
+    <li>Officers log in (nobody signs up), hold one case alone, and close only with proof.</li>
+    <li>Guardians are checked ethical hackers under aliases; their ratings are written by our team, not bought.</li>
+    <li>Money comes from contextual sponsors — no behavioural tracking, no data brokerage, ever.</li>
+  </ul>
+  <p><a class="btn primary" href="{% url 'report_create' %}">Speak Up Anonymously</a></p>
+</div>
+{% endblock %}

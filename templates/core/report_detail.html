@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}{{ report.public_id }} — {{ report.title }} | Silent Shield{% endblock %}
+{% block content %}
+<article class="wrap">
+  <p class="crumbs"><a href="{% url 'report_list' %}">Live Reports</a> <span aria-hidden="true">/</span> <span translate="no">{{ report.public_id }}</span></p>
+  <div class="case-head">
+    <div>
+      <p class="case-id mono"><span translate="no">{{ report.public_id }}</span> · {{ report.get_category_display }} · {{ report.created_at|date:"d M Y" }} · <span class="nums">{{ report.view_count }}</span> reads</p>
+      <h1 style="font-size:clamp(1.9rem,3.6vw,2.8rem)">{{ report.title }}</h1>
+      <p class="muted">{{ report.location_text }}{% if report.district %} · {{ report.district }}{% endif %}{% if report.happened_at %} · {{ report.happened_at|date:"d M Y" }}{% endif %}</p>
+    </div>
+    <p><span class="stamp stamp-{{ report.status }}">{{ report.get_status_display }}</span></p>
+  </div>
+
+  <div class="case-grid">
+    <div>
+      <section class="card" aria-label="What was reported">
+        <h2>What the Letter Says</h2>
+        <p class="prewrap">{{ report.description }}</p>
+      </section>
+
+      <section aria-label="Evidence" style="margin-top:22px">
+        <h2>Enclosed Evidence ({{ initial|length }})</h2>
+        {% if initial %}
+        <div class="ev-grid">
+          {% for e in initial %}
+          <figure class="ev">
+            {% if e.kind == "image" %}
+              <a href="{{ e.file.url }}"><img src="{{ e.file.url }}" alt="Evidence photo {{ forloop.counter }} for case {{ report.public_id }}" loading="lazy"{% if e.width %} width="{{ e.width }}" height="{{ e.height }}"{% endif %}></a>
+            {% elif e.kind == "video" %}
+              <video controls preload="metadata" src="{{ e.file.url }}"></video>
+            {% else %}
+              <audio controls preload="metadata" src="{{ e.file.url }}"></audio>
+            {% endif %}
+            <figcaption><span class="tag">{{ e.kind }}</span> {% if e.caption %}{{ e.caption }}{% endif %}</figcaption>
+          </figure>
+          {% endfor %}
+        </div>
+        {% else %}<p class="muted">No public evidence items.</p>{% endif %}
+      </section>
+
+      {% if report.status == "resolved" %}
+      <section class="card resolved" aria-label="Resolution" style="margin-top:22px">
+        <h2>How It Ended — Verified With Proof</h2>
+        {% if report.resolution_message %}<p class="prewrap">{{ report.resolution_message }}</p>{% endif %}
+        <p class="muted small">Closed {{ report.resolved_at|date:"d M Y" }}{% if report.claimed_by %} · handled by the corps{% endif %}.</p>
+        <div class="ev-grid">
+          {% for e in proof %}
+          <figure class="ev">
+            {% if e.kind == "image" %}
+              <a href="{{ e.file.url }}"><img src="{{ e.file.url }}" alt="Resolution proof photo for case {{ report.public_id }}" loading="lazy"{% if e.width %} width="{{ e.width }}" height="{{ e.height }}"{% endif %}></a>
+            {% elif e.kind == "video" %}
+              <video controls preload="metadata" src="{{ e.file.url }}"></video>
+            {% else %}
+              <audio controls preload="metadata" src="{{ e.file.url }}"></audio>
+            {% endif %}
+            <figcaption><span class="tag ok">Proof</span> {{ e.kind }}</figcaption>
+          </figure>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+    </div>
+
+    <aside>
+      <section class="card" aria-label="Case status">
+        <h2>Where This Stands</h2>
+        <p><span class="stamp stamp-{{ report.status }}">{{ report.get_status_display }}</span></p>
+        {% if report.status == "investigating" %}
+          <p class="muted small">Taken up by the corps on {{ report.claimed_at|date:"d M Y" }}. Cases left hanging return to the public queue after {{ ttl_days }} days (about 10&nbsp;months).</p>
+        {% elif report.status == "pending" %}
+          <p class="muted small">Open and waiting. The first officer who claims it holds it alone — nobody else can take it meanwhile.</p>
+        {% endif %}
+        {% if user.is_authenticated %}
+          {% if report.status == "pending" %}
+            <form method="post" action="{% url 'claim_report' report.public_id %}" data-confirm="Take {{ report.public_id }} on exclusively?">{% csrf_token %}<button class="btn primary" type="submit">Take This Case</button></form>
+          {% elif report.status == "investigating" and report.claimed_by_id == user.id %}
+            <form method="post" action="{% url 'release_report' report.public_id %}">{% csrf_token %}<button class="btn ghost" type="submit">Hand It Back</button></form>
+            <hr>
+            <h3>Close It With Proof</h3>
+            <form method="post" action="{% url 'resolve_report' report.public_id %}" enctype="multipart/form-data" class="stack">
+              {% csrf_token %}
+              <div><label for="id_message">What Happened in the End</label>{{ resolution_form.message }}</div>
+              <div><label for="id_files">Proof — Video, Audio, or Photo (at Least One)</label>
+              <input type="file" id="id_files" name="files" multiple accept="image/*,video/*,audio/*" required>
+              <p class="hint">Same rules: rounds pile up, ✕ drops one. Limits {{ limits.image }}/{{ limits.video }}/{{ limits.audio }}&nbsp;MB.</p>
+              <p class="hint" data-count aria-live="polite"></p>
+              <div class="preview" data-preview aria-live="polite"></div></div>
+              <button class="btn primary" type="submit">Mark Resolved</button>
+            </form>
+          {% elif report.status == "investigating" %}
+            <p class="notice">A fellow officer is already on this one. Choose another letter from the queue.</p>
+          {% endif %}
+        {% else %}
+          <p class="muted small">Corps only beyond this point: <a href="{% url 'login' %}">log in</a> to claim or resolve. There is no public sign-up — accounts are handed out by admins.</p>
+        {% endif %}
+      </section>
+      <section class="card" aria-label="Reporter safety" style="margin-top:16px;background:var(--flame-tint);border-color:var(--flame)">
+        <h2>About the Sender</h2>
+        <p class="muted small" style="margin-bottom:0">Nothing — and that is the point. No name, no account, nothing identifying travels with case <span class="mono" translate="no">{{ report.public_id }}</span>. The code is the only thread.</p>
+      </section>
+    </aside>
+  </div>
+</article>
+{% endblock %}
